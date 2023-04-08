@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:guardianship_siswa_fe/views/login/login.dart';
+import 'package:guardianship_siswa_fe/views/pages/detailPerwalian.dart';
 import 'package:guardianship_siswa_fe/views/pages/home.dart';
+import 'package:guardianship_siswa_fe/views/pages/perwalian.dart';
 
 void main() {
   runApp(MyApp());
@@ -23,6 +25,8 @@ class _MyAppState extends State<MyApp> {
       initialRoute: '/loginpage',
       routes: {
         '/home':(context) => Home(),
+        '/perwalian':(context) => Perwalian(),
+        '/detail_perwalian':(context) => DetailPerwalian(),
       }
     );
   }

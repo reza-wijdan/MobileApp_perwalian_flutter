@@ -60,7 +60,7 @@ class CardPerwalian extends StatelessWidget {
                   const EdgeInsets.symmetric(horizontal: 0),
               child: ElevatedButton(
                 onPressed: () {
-                  //klik Perwalian
+                  Navigator.of(context).pushNamed('/perwalian');
                 },
                 style: ButtonStyle(
                   backgroundColor:
