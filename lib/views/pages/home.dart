@@ -102,7 +102,9 @@ class _MyHomeState extends State<Home> {
                         height: 30,
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 25,),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 25,
+                        ),
                         child: CardPerwalian(),
                       )
                     ],

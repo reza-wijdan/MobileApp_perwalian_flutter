@@ -22,10 +22,9 @@ class LoginViewModel {
       },
     );
     if (response.statusCode == 200) {
-      var token = response.body; // assume token is returned as plain text
+      var token = response.body;
       await _storage.write(key: 'token', value: token);
       return token;
-      print(token); // prints the response body as a string
     } else {
       // login failed
       throw Exception('Failed to authenticate user');

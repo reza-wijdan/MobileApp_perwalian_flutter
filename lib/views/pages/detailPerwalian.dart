@@ -160,7 +160,7 @@ class _DetailPerwalianState extends State<DetailPerwalian> {
                     padding: const EdgeInsets.symmetric(horizontal: 0),
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).pushNamed('/detail_perwalian');
+                        Navigator.of(context).pushNamed('/notif_konfir');
                       },
                       style: ButtonStyle(
                         backgroundColor:

@@ -14,15 +14,19 @@ class _LoginPage extends State<LoginPage> {
   final _loginViewModel = LoginViewModel();
   String _errorMessage = '';
   bool _passwordVisible = false;
+  bool _isLoading = false;
 
   void _submitForm() async {
+    setState(() {
+      _isLoading = true;
+    });
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
       var login = Login(username: _username, password: _password);
       var success = await _loginViewModel.authenticateUser(login);
 
-       try {
+      try {
         var token = await _loginViewModel.authenticateUser(login);
         Navigator.of(context).pushNamed('/home');
       } catch (e) {
@@ -32,7 +36,6 @@ class _LoginPage extends State<LoginPage> {
       }
     }
   }
-
 
   String _username = '';
   String _password = '';
@@ -199,7 +202,15 @@ class _LoginPage extends State<LoginPage> {
                     padding: MaterialStateProperty.all<EdgeInsets>(
                         EdgeInsets.all(15)),
                   ),
-                  child: Text('LOGIN'),
+                  child: _isLoading
+                      ? SizedBox(
+                          height: 20.0,
+                          width: 20.0,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 3.0,
+                          ),
+                        )
+                      : Text('LOGIN'),
                 ),
               )
             ],

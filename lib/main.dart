@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:guardianship_siswa_fe/views/login/login.dart';
 import 'package:guardianship_siswa_fe/views/pages/detailPerwalian.dart';
 import 'package:guardianship_siswa_fe/views/pages/home.dart';
+import 'package:guardianship_siswa_fe/views/pages/notifKonfir.dart';
 import 'package:guardianship_siswa_fe/views/pages/perwalian.dart';
 
 void main() {
@@ -27,6 +28,7 @@ class _MyAppState extends State<MyApp> {
         '/home':(context) => Home(),
         '/perwalian':(context) => Perwalian(),
         '/detail_perwalian':(context) => DetailPerwalian(),
+        '/notif_konfir':(context) => NotifKonfir()
       }
     );
   }
