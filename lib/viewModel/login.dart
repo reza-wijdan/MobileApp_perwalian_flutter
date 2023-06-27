@@ -10,7 +10,7 @@ class LoginViewModel {
   String apiUrl = 'http://absensi-siswa-be.sagatech-alpha.com/api/siswa/login';
   final _storage = new FlutterSecureStorage();
 
-  Future<String> authenticateUser(Login login) async {
+  Future<void> authenticateUser(Login login) async {
     var response = await http.post(
       Uri.parse(apiUrl),
       headers: <String, String>{
@@ -22,9 +22,11 @@ class LoginViewModel {
       },
     );
     if (response.statusCode == 200) {
-      var token = response.body;
-      await _storage.write(key: 'token', value: token);
-      return token;
+      Map<String, dynamic> jsonData = json.decode(response.body);
+      Map<String, dynamic> data = jsonData['data'];
+      Map<String, dynamic> results = data['results'];
+      String token = results['__token'];
+      await _storage.write(key: 'auth_token', value: token);
     } else {
       // login failed
       throw Exception('Failed to authenticate user');

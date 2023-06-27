@@ -51,7 +51,7 @@ class _LoginPage extends State<LoginPage> {
             children: [
               Column(
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     height: 40,
                   ),
                   Center(
@@ -61,7 +61,7 @@ class _LoginPage extends State<LoginPage> {
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 50,
               ),
               SafeArea(
@@ -70,10 +70,10 @@ class _LoginPage extends State<LoginPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                       Text(
                         "Login",
                         textAlign: TextAlign.start,
-                        style: TextStyle(
+                        style:TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 24),
                       ),
                     ],

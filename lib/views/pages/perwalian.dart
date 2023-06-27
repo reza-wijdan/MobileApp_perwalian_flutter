@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:guardianship_siswa_fe/constants/color.dart';
 import 'package:dropdown_search/dropdown_search.dart';
+import 'package:guardianship_siswa_fe/model/matkul.dart';
+import 'package:guardianship_siswa_fe/services/api_services.dart';
+import 'package:guardianship_siswa_fe/viewModel/matkulViewModel.dart';
 import 'package:guardianship_siswa_fe/views/components/chekbox.dart';
 
 class Perwalian extends StatefulWidget {
@@ -12,6 +15,20 @@ class Perwalian extends StatefulWidget {
 }
 
 class _PerwalianState extends State<Perwalian> {
+  ApiService apiService = ApiService();
+  late MatkulViewModel matkulViewModel;
+  List<Matkul> matkul = [];
+
+  void initState() {
+    getData();
+    super.initState();
+  }
+
+  getData() async {
+    matkul = await apiService.getMatkul();
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,29 +67,30 @@ class _PerwalianState extends State<Perwalian> {
                     ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: DropdownSearch<String>(
-                    popupProps: PopupProps.menu(
-                      showSelectedItems: true,
-                      disabledItemFn: (String s) => s.startsWith('I'),
-                    ),
-                    items: ["2021/2022", "2022/2023"],
-                    dropdownDecoratorProps: DropDownDecoratorProps(
-                      dropdownSearchDecoration: InputDecoration(
-                        fillColor: Colors.black,
-                        labelText: "Tahun Akademik",
-                        hintText: "Pilih Tahun Akademik",
-                      ),
-                    ),
-                    onChanged: print,
-                  ),
-                )
+                // Padding(
+                //   padding:
+                //       const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                //   child: DropdownSearch<String>(
+                //     popupProps: PopupProps.menu(
+                //       showSelectedItems: true,
+                //       disabledItemFn: (String s) => s.startsWith('I'),
+                //     ),
+                //     items: ["2021/2022", "2022/2023"],
+                //     dropdownDecoratorProps: const DropDownDecoratorProps(
+                //       dropdownSearchDecoration: InputDecoration(
+                //         fillColor: Colors.black,
+                //         labelText: "Tahun Akademik",
+                //         hintText: "Pilih Tahun Akademik",
+                //       ),
+                //     ),
+                //     onChanged: print,
+                //   ),
+                // )
               ],
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 225),
+            padding: const EdgeInsets.only(top: 140),
             child: ClipRRect(
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(0),
@@ -85,47 +103,61 @@ class _PerwalianState extends State<Perwalian> {
                   //   "images/abs.png",
                   //   fit: BoxFit.cover,
                   // ),
-                  decoration: BoxDecoration(color: Colors.white),
+                  decoration: const BoxDecoration(color: Colors.white),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: ListView(
-                      padding: EdgeInsets.only(top: 20),
+                      padding: const EdgeInsets.only(top: 20),
                       children: [
-                        Text(
+                        const Text(
                           "Mata Kuliah",
                           style:
                               TextStyle(fontSize: 12, color: Color(0xFFAFAFAF)),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 30),
+                        const Padding(
+                          padding:  EdgeInsets.only(bottom: 0),
                           child: Text(
                             "Maksimal 22 SKS",
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
-                        CustomCheckbox(),
-                        CustomCheckbox(),
-                        CustomCheckbox(),
-                        CustomCheckbox(),
-                        CustomCheckbox(),
-                        CustomCheckbox(),
-                        CustomCheckbox(),
-                        SizedBox(
+                        ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: matkul.length,
+                          physics: const ClampingScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            return CustomCheckbox(
+                                name: matkul[index].name, sks: matkul[index].sks);
+                          },
+                        ),
+                        // Center(
+                        //   child: 
+                        //     ListView.builder(
+                        //       itemBuilder: (context, index) {
+                        //         return CustomCheckbox(name: "matkul", sks: 1);
+                        //       },
+                        //       itemCount: 10,
+                        //     ),
+                        // ),
+                        const SizedBox(
                           height: 15,
                         ),
-                        Text(
+                        const Text(
                           "Jumlah SKS : 20",
                           style: TextStyle(color: Color(0xFFAFAFAF)),
                         ),
-                        SizedBox(height: 30,),
+                        const SizedBox(
+                          height: 30,
+                        ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 0),
                           child: ElevatedButton(
                             onPressed: () {
-                              Navigator.of(context).pushNamed('/detail_perwalian');
+                              Navigator.of(context)
+                                  .pushNamed('/detail_perwalian');
                             },
                             style: ButtonStyle(
                               backgroundColor:
@@ -137,10 +169,10 @@ class _PerwalianState extends State<Perwalian> {
                                 ),
                               ),
                               padding: MaterialStateProperty.all<EdgeInsets>(
-                                  EdgeInsets.symmetric(
+                                  const EdgeInsets.symmetric(
                                       horizontal: 0, vertical: 18)),
                             ),
-                            child: Text(
+                            child: const Text(
                               'SUBMIT',
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.bold),

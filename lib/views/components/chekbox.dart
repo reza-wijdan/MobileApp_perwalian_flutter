@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 
 class CustomCheckbox extends StatefulWidget {
+  final String name;
+  final int sks;
+
+  const CustomCheckbox({required this.name, required this.sks});
+
   @override
   _CustomCheckboxState createState() => _CustomCheckboxState();
 }
@@ -28,23 +33,32 @@ class _CustomCheckboxState extends State<CustomCheckbox> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _isChecked = !_isChecked;
-                        });
-                      },
-                      child: _isChecked
-                          ? Image.asset('assets/images/chekced.png')
-                          : Image.asset('assets/images/uncheked.png'),
-                    ),
-                    SizedBox(width: 10,),
-                    Text("Dasar Pemograman 2", style: TextStyle(fontWeight: FontWeight.bold),)
-                  ],
+                Flexible(
+                  flex: 2,
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _isChecked = !_isChecked;
+                      });
+                    },
+                    child: _isChecked
+                        ? Image.asset('assets/images/chekced.png')
+                        : Image.asset('assets/images/uncheked.png'),
+                  ),
                 ),
-                Text("2 SKS", style: TextStyle(color: Color(0xFFAFAFAF)),)
+                Flexible(
+                    flex: 7,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        '${widget.name}',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    )),
+                Text(
+                    "${widget.sks} SKS",
+                    style:const TextStyle(color: Color(0xFFAFAFAF)),
+                )
               ],
             ),
           ),
