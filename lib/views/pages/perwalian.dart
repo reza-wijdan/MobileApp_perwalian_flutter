@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:guardianship_siswa_fe/constants/color.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:guardianship_siswa_fe/model/matkul.dart';
+import 'package:guardianship_siswa_fe/model/select.dart';
 import 'package:guardianship_siswa_fe/services/api_services.dart';
 import 'package:guardianship_siswa_fe/viewModel/matkulViewModel.dart';
 import 'package:guardianship_siswa_fe/views/components/chekbox.dart';
+import 'package:guardianship_siswa_fe/views/pages/detailPerwalian.dart';
 
 class Perwalian extends StatefulWidget {
   @override
@@ -18,6 +21,8 @@ class _PerwalianState extends State<Perwalian> {
   ApiService apiService = ApiService();
   late MatkulViewModel matkulViewModel;
   List<Matkul> matkul = [];
+  List<SelectedItem> selectItem = [];
+  bool _isChecked = false;
 
   void initState() {
     getData();
@@ -26,7 +31,20 @@ class _PerwalianState extends State<Perwalian> {
 
   getData() async {
     matkul = await apiService.getMatkul();
+
     setState(() {});
+  }
+
+  void handleTapItem(int id, String name, int sks) {
+    if (isSelected(id)) {
+      selectItem.remove((item) => item.id == item.id);
+    } else {
+      selectItem.add(SelectedItem(id: id, name: name, sks: sks));
+    }
+  }
+
+  bool isSelected(int id) {
+    return selectItem.any((item) => item.id == id);
   }
 
   @override
@@ -56,9 +74,9 @@ class _PerwalianState extends State<Perwalian> {
                           SizedBox(
                             width: 10,
                           ),
-                          Text(
+                          const Text(
                             "Perwalian",
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 18),
                           )
                         ],
@@ -67,32 +85,13 @@ class _PerwalianState extends State<Perwalian> {
                     ],
                   ),
                 ),
-                // Padding(
-                //   padding:
-                //       const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                //   child: DropdownSearch<String>(
-                //     popupProps: PopupProps.menu(
-                //       showSelectedItems: true,
-                //       disabledItemFn: (String s) => s.startsWith('I'),
-                //     ),
-                //     items: ["2021/2022", "2022/2023"],
-                //     dropdownDecoratorProps: const DropDownDecoratorProps(
-                //       dropdownSearchDecoration: InputDecoration(
-                //         fillColor: Colors.black,
-                //         labelText: "Tahun Akademik",
-                //         hintText: "Pilih Tahun Akademik",
-                //       ),
-                //     ),
-                //     onChanged: print,
-                //   ),
-                // )
               ],
             ),
           ),
           Padding(
             padding: const EdgeInsets.only(top: 140),
             child: ClipRRect(
-              borderRadius: BorderRadius.only(
+              borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(0),
                 topRight: Radius.circular(0),
               ),
@@ -118,7 +117,7 @@ class _PerwalianState extends State<Perwalian> {
                           height: 10,
                         ),
                         const Padding(
-                          padding:  EdgeInsets.only(bottom: 0),
+                          padding: EdgeInsets.only(bottom: 0),
                           child: Text(
                             "Maksimal 22 SKS",
                             style: TextStyle(fontWeight: FontWeight.bold),
@@ -129,19 +128,20 @@ class _PerwalianState extends State<Perwalian> {
                           itemCount: matkul.length,
                           physics: const ClampingScrollPhysics(),
                           itemBuilder: (context, index) {
+                            final item = matkul[index];
                             return CustomCheckbox(
-                                name: matkul[index].name, sks: matkul[index].sks);
+                              name: matkul[index].name,
+                              sks: matkul[index].sks,
+                              onTap: () {
+                                handleTapItem(matkul[index].id,
+                                    matkul[index].name, matkul[index].sks);
+                                setState(() {
+                                  _isChecked = !_isChecked;
+                                });
+                              },
+                            );
                           },
                         ),
-                        // Center(
-                        //   child: 
-                        //     ListView.builder(
-                        //       itemBuilder: (context, index) {
-                        //         return CustomCheckbox(name: "matkul", sks: 1);
-                        //       },
-                        //       itemCount: 10,
-                        //     ),
-                        // ),
                         const SizedBox(
                           height: 15,
                         ),
@@ -156,8 +156,13 @@ class _PerwalianState extends State<Perwalian> {
                           padding: const EdgeInsets.symmetric(horizontal: 0),
                           child: ElevatedButton(
                             onPressed: () {
-                              Navigator.of(context)
-                                  .pushNamed('/detail_perwalian');
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DetailPerwalian(
+                                      selectedItems: selectItem),
+                                ),
+                              );
                             },
                             style: ButtonStyle(
                               backgroundColor:

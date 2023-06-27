@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 class CustomCheckbox extends StatefulWidget {
   final String name;
   final int sks;
+  final VoidCallback onTap;
 
-  const CustomCheckbox({required this.name, required this.sks});
+  const CustomCheckbox(
+      {required this.name, required this.sks, required this.onTap});
 
   @override
   _CustomCheckboxState createState() => _CustomCheckboxState();
@@ -12,14 +14,16 @@ class CustomCheckbox extends StatefulWidget {
 
 class _CustomCheckboxState extends State<CustomCheckbox> {
   bool _isChecked = false;
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          _isChecked = !_isChecked;
-        });
-      },
+      onTap: widget.onTap,
+      // onTap: () {
+      //   setState(() {
+      //     _isChecked = !_isChecked;
+      //   });
+      // },
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 3),
         child: Container(
@@ -56,8 +60,8 @@ class _CustomCheckboxState extends State<CustomCheckbox> {
                       ),
                     )),
                 Text(
-                    "${widget.sks} SKS",
-                    style:const TextStyle(color: Color(0xFFAFAFAF)),
+                  "${widget.sks} SKS",
+                  style: const TextStyle(color: Color(0xFFAFAFAF)),
                 )
               ],
             ),

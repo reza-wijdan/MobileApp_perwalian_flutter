@@ -27,7 +27,7 @@ class _MyAppState extends State<MyApp> {
       routes: {
         '/home':(context) => Home(),
         '/perwalian':(context) => Perwalian(),
-        '/detail_perwalian':(context) => DetailPerwalian(),
+        // '/detail_perwalian':(context) => DetailPerwalian(),
         '/notif_konfir':(context) => NotifKonfir()
       }
     );

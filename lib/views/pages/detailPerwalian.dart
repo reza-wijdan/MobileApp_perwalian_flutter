@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:guardianship_siswa_fe/constants/color.dart';
+import 'package:guardianship_siswa_fe/model/matkul.dart';
+import 'package:guardianship_siswa_fe/model/select.dart';
 
-class DetailPerwalian extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    return _DetailPerwalianState();
-  }
-}
 
-class _DetailPerwalianState extends State<DetailPerwalian> {
+
+class DetailPerwalian extends StatelessWidget {
+  final List<SelectedItem> selectedItems;
+
+  const DetailPerwalian({required this.selectedItems});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -101,26 +101,18 @@ class _DetailPerwalianState extends State<DetailPerwalian> {
                           SizedBox(
                             height: 10,
                           ),
-                          Matkul(
-                            name: "Dasar Pemograman 2",
-                            sks: "2",
-                          ),
-                          Matkul(
-                            name: "Matematika Diskrit",
-                            sks: "3",
-                          ),
-                          Matkul(
-                            name: "Sistem Operasi",
-                            sks: "4",
-                          ),
-                          Matkul(
-                            name: "Artificial Intelligence",
-                            sks: "2",
-                          ),
-                          Matkul(
-                            name: "Distributed Computing",
-                            sks: "3",
-                          ),
+                           ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: selectedItems.length,
+                          physics: const ClampingScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            final item = selectedItems[index];
+                            return MatkulDetail(
+                              name: selectedItems[index].name,
+                              sks: selectedItems[index].sks,
+                            );
+                          },
+                        ),
                           SizedBox(
                             height: 15,
                           ),
@@ -191,15 +183,15 @@ class _DetailPerwalianState extends State<DetailPerwalian> {
   }
 }
 
-class Matkul extends StatelessWidget {
-  const Matkul({
+class MatkulDetail extends StatelessWidget {
+  const MatkulDetail({
     required this.name,
     required this.sks,
     super.key,
   });
 
   final String name;
-  final String sks;
+  final int sks;
 
   @override
   Widget build(BuildContext context) {
@@ -211,7 +203,7 @@ class Matkul extends StatelessWidget {
           Text(name),
           Padding(
             padding: const EdgeInsets.only(right: 10),
-            child: Text(sks),
+            child: Text("${sks} SKS"),
           ),
         ],
       ),
