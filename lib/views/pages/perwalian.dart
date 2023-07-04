@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/svg.dart';
@@ -12,6 +14,7 @@ import 'package:guardianship_siswa_fe/views/pages/detailPerwalian.dart';
 
 class Perwalian extends StatefulWidget {
   @override
+  
   State<StatefulWidget> createState() {
     return _PerwalianState();
   }
@@ -23,6 +26,7 @@ class _PerwalianState extends State<Perwalian> {
   List<Matkul> matkul = [];
   List<SelectedItem> selectItem = [];
   bool _isChecked = false;
+  final storage = FlutterSecureStorage();
 
   void initState() {
     getData();
@@ -35,7 +39,11 @@ class _PerwalianState extends State<Perwalian> {
     setState(() {});
   }
 
-  void handleTapItem(int id, String name, int sks) {
+  addToStorage(String key, String value) async {
+    await storage.write(key: key, value: value);
+  }
+
+  void handleTapItem(int id, String name, int sks) async {
     if (isSelected(id)) {
       selectItem.remove((item) => item.id == item.id);
     } else {
@@ -43,12 +51,48 @@ class _PerwalianState extends State<Perwalian> {
     }
   }
 
+   int get calculateTotalSKS {
+    int totalSKS = 0;
+    for (var item in selectItem) {
+      totalSKS += item.sks;
+    }
+    print('Total SKS: $totalSKS');
+    return totalSKS;
+  }
+  
+  
+
+  void saveDataToStorage() async {
+    // Mengonversi List menjadi String menggunakan json.encode
+    String selectedItemsString = selectItem.toString();
+
+    // Menyimpan List selectedItems ke storage dengan menggunakan satu key
+    await storage.write(key: 'selectedMatkul', value: selectedItemsString);
+  }
+
   bool isSelected(int id) {
     return selectItem.any((item) => item.id == id);
   }
 
+
+  checkStorageContents() async {
+    final secureStorage = FlutterSecureStorage();
+    final allValues = await secureStorage.readAll();
+
+    if (allValues.isNotEmpty) {
+      // Storage is not empty, print the contents
+      allValues.forEach((key, value) {
+        print('$key: $value');
+      });
+    } else {
+      // Storage is empty
+      print('Storage is empty');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    print(calculateTotalSKS);
     return Scaffold(
       body: Stack(
         children: [
@@ -132,9 +176,21 @@ class _PerwalianState extends State<Perwalian> {
                             return CustomCheckbox(
                               name: matkul[index].name,
                               sks: matkul[index].sks,
+                              selected: _isChecked,
                               onTap: () {
                                 handleTapItem(matkul[index].id,
                                     matkul[index].name, matkul[index].sks);
+
+                                String dataMatkul = selectItem.join(',');
+                                storage
+                                    .write(key: 'dataMatkul', value: dataMatkul)
+                                    .then((_) {
+                                  // Data is successfully stored
+                                  print('Data stored successfully');
+                                }).catchError((error) {
+                                  // Error occurred while storing data
+                                  print('Error storing data: $error');
+                                });
                                 setState(() {
                                   _isChecked = !_isChecked;
                                 });
@@ -145,8 +201,8 @@ class _PerwalianState extends State<Perwalian> {
                         const SizedBox(
                           height: 15,
                         ),
-                        const Text(
-                          "Jumlah SKS : 20",
+                         Text(
+                          'Jumlah SKS : ${calculateTotalSKS}',
                           style: TextStyle(color: Color(0xFFAFAFAF)),
                         ),
                         const SizedBox(
@@ -163,6 +219,7 @@ class _PerwalianState extends State<Perwalian> {
                                       selectedItems: selectItem),
                                 ),
                               );
+                              saveDataToStorage();
                             },
                             style: ButtonStyle(
                               backgroundColor:

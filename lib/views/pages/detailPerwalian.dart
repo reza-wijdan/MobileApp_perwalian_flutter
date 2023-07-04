@@ -1,17 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:guardianship_siswa_fe/constants/color.dart';
 import 'package:guardianship_siswa_fe/model/matkul.dart';
 import 'package:guardianship_siswa_fe/model/select.dart';
+import 'package:guardianship_siswa_fe/model/sendMatkul.dart';
+import 'package:guardianship_siswa_fe/viewModel/sendViewModel.dart';
 
 
+class DetailPerwalian extends StatefulWidget {
+    final List<SelectedItem> selectedItems;
 
-class DetailPerwalian extends StatelessWidget {
-  final List<SelectedItem> selectedItems;
+  @override
+  _DetailPerwalian createState() => _DetailPerwalian();
+    const DetailPerwalian({required this.selectedItems});
 
-  const DetailPerwalian({required this.selectedItems});
+}
+class _DetailPerwalian extends State<DetailPerwalian> {
+
+void initState() {
+    checkStorageContents();
+    super.initState();
+  }
+
+  int get calculateTotalSKS {
+    int totalSKS = 0;
+    for (var item in widget.selectedItems) {
+      totalSKS += item.sks;
+    }
+    print('Total SKS: $totalSKS');
+    return totalSKS;
+  }
+
+checkStorageContents() async {
+    final secureStorage = FlutterSecureStorage();
+    final allValues = await secureStorage.readAll();
+
+    if (allValues.isNotEmpty) {
+      // Storage is not empty, print the contents
+      allValues.forEach((key, value) {
+        print('$key: $value');
+      });
+    } else {
+      // Storage is empty
+      print('Storage is empty');
+    }
+  }
   @override
   Widget build(BuildContext context) {
+    print(checkStorageContents());
     return Scaffold(
       body: Stack(
         children: [
@@ -31,27 +68,40 @@ class DetailPerwalian extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          Icon(Icons.arrow_back_ios),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Detail Perwalian",
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              Text("Semester Ganjil 2023-2024", style: TextStyle(fontSize: 12),)
-                            ],
-                          )
-                        ],
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pop();
+                          setState(() {
+                            // Menghapus data yang dipilih
+                            widget.selectedItems.clear();
+                          });
+                        },
+                        child: Row(
+                          children: [
+                            Icon(Icons.arrow_back_ios),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Detail Perwalian",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                Text(
+                                  "Semester Ganjil 2023-2024",
+                                  style: TextStyle(fontSize: 12),
+                                )
+                              ],
+                            )
+                          ],
+                        ),
                       ),
                       SvgPicture.asset("assets/images/ic_perwalian.svg"),
                     ],
@@ -101,18 +151,18 @@ class DetailPerwalian extends StatelessWidget {
                           SizedBox(
                             height: 10,
                           ),
-                           ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: selectedItems.length,
-                          physics: const ClampingScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            final item = selectedItems[index];
-                            return MatkulDetail(
-                              name: selectedItems[index].name,
-                              sks: selectedItems[index].sks,
-                            );
-                          },
-                        ),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: widget.selectedItems.length,
+                            physics: const ClampingScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              final item = widget.selectedItems[index];
+                              return MatkulDetail(
+                                name: widget.selectedItems[index].name,
+                                sks: widget.selectedItems[index].sks,
+                              );
+                            },
+                          ),
                           SizedBox(
                             height: 15,
                           ),
@@ -133,11 +183,14 @@ class DetailPerwalian extends StatelessWidget {
                               children: [
                                 Text(
                                   "Jumlah Mata Kuliah : 5",
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12),
                                 ),
-                                Text("Jumalah SKS : 14",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold, fontSize: 12))
+                                Text("Jumalah SKS : ${calculateTotalSKS}",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12))
                               ],
                             ),
                           )
@@ -151,9 +204,7 @@ class DetailPerwalian extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 0),
                     child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pushNamed('/notif_konfir');
-                      },
+                      onPressed: () {},
                       style: ButtonStyle(
                         backgroundColor:
                             MaterialStateProperty.all<Color>(appBlue),
@@ -164,7 +215,8 @@ class DetailPerwalian extends StatelessWidget {
                           ),
                         ),
                         padding: MaterialStateProperty.all<EdgeInsets>(
-                            EdgeInsets.symmetric(horizontal: 120, vertical: 18)),
+                            EdgeInsets.symmetric(
+                                horizontal: 120, vertical: 18)),
                       ),
                       child: Text(
                         'LANJUTKAN',
@@ -200,10 +252,12 @@ class MatkulDetail extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(name),
+          Flexible(
+            child: Text(name),
+          ),
           Padding(
             padding: const EdgeInsets.only(right: 10),
-            child: Text("${sks} SKS"),
+            child: Text("${sks}"),
           ),
         ],
       ),
