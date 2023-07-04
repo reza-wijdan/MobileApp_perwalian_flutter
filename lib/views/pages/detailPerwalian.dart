@@ -7,20 +7,23 @@ import 'package:guardianship_siswa_fe/model/select.dart';
 import 'package:guardianship_siswa_fe/model/sendMatkul.dart';
 import 'package:guardianship_siswa_fe/viewModel/sendViewModel.dart';
 
-
 class DetailPerwalian extends StatefulWidget {
-    final List<SelectedItem> selectedItems;
-    final int onDataClicked;
-    final VoidCallback onClearData;
+  final List<SelectedItem> selectedItems;
+  final int onDataClicked;
+  final VoidCallback onClearData;
 
   @override
   _DetailPerwalian createState() => _DetailPerwalian();
-    const DetailPerwalian({required this.selectedItems, required this.onDataClicked, required this.onClearData});
-
+  const DetailPerwalian(
+      {required this.selectedItems,
+      required this.onDataClicked,
+      required this.onClearData});
 }
-class _DetailPerwalian extends State<DetailPerwalian> {
 
-void initState() {
+class _DetailPerwalian extends State<DetailPerwalian> {
+  bool isChecked = false;
+
+  void initState() {
     checkStorageContents();
     super.initState();
   }
@@ -34,8 +37,17 @@ void initState() {
     return totalSKS;
   }
 
+  hapus() {
+    setState(() {
+      Navigator.of(context).pop();
+      isChecked = false;
+      widget.onClearData();
+      // Menghapus data yang dipilih
+      widget.selectedItems.clear();
+    });
+  }
 
-checkStorageContents() async {
+  checkStorageContents() async {
     final secureStorage = FlutterSecureStorage();
     final allValues = await secureStorage.readAll();
 
@@ -49,9 +61,9 @@ checkStorageContents() async {
       print('Storage is empty');
     }
   }
+
   @override
   Widget build(BuildContext context) {
-    print(checkStorageContents());
     return Scaffold(
       body: Stack(
         children: [
@@ -72,14 +84,7 @@ checkStorageContents() async {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       GestureDetector(
-                        onTap: () {
-                          widget.onClearData();
-                          Navigator.of(context).pop();
-                          setState(() {
-                            // Menghapus data yang dipilih
-                            widget.selectedItems.clear();
-                          });
-                        },
+                        onTap: hapus,
                         child: Row(
                           children: [
                             Icon(Icons.arrow_back_ios),

@@ -4,10 +4,11 @@ class CustomCheckbox extends StatefulWidget {
   final String name;
   final int sks;
   final VoidCallback onTap;
-  final bool selected;
+  final bool isChecked;
+  final ValueChanged<bool> onChanged;
 
   const CustomCheckbox(
-      {required this.name, required this.sks, required this.onTap, required this.selected});
+      {required this.name, required this.sks, required this.onTap, required this.isChecked, required this.onChanged});
 
   @override
   _CustomCheckboxState createState() => _CustomCheckboxState();
@@ -16,11 +17,22 @@ class CustomCheckbox extends StatefulWidget {
 class _CustomCheckboxState extends State<CustomCheckbox> {
   bool _isChecked = false;
 
+  void initState() {
+    super.initState();
+    _isChecked = widget.isChecked;
+  }
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
       child: GestureDetector(
-        onTap: widget.onTap,
+        onTap: () {
+          widget.onTap();
+          setState(() {
+            _isChecked = !_isChecked;
+            widget.onChanged(_isChecked);
+          });
+        },
         // onTap: () {
         //   setState(() {
         //     _isChecked = !_isChecked;
@@ -43,9 +55,7 @@ class _CustomCheckboxState extends State<CustomCheckbox> {
                     flex: 2,
                     child: GestureDetector(
                       onTap: () {
-                        setState(() {
-                          _isChecked = !_isChecked;
-                        });
+                        widget.onChanged(_isChecked);
                       },
                       child: _isChecked
                           ? Image.asset('assets/images/chekced.png')

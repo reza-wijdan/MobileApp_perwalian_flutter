@@ -14,7 +14,6 @@ import 'package:guardianship_siswa_fe/views/pages/detailPerwalian.dart';
 
 class Perwalian extends StatefulWidget {
   @override
-  
   State<StatefulWidget> createState() {
     return _PerwalianState();
   }
@@ -31,7 +30,20 @@ class _PerwalianState extends State<Perwalian> {
 
   void initState() {
     getData();
+    refreshPage();
     super.initState();
+  }
+
+  void toggleChecked() {
+    setState(() {
+      _isChecked = !_isChecked;
+    });
+  }
+
+  void refreshPage() {
+    setState(() {
+      _isChecked;
+    });
   }
 
   getData() async {
@@ -53,21 +65,29 @@ class _PerwalianState extends State<Perwalian> {
   void handleTapItem(int id, String name, int sks) async {
     if (isSelected(id)) {
       selectItem.remove((item) => item.id == item.id);
+      matkulCount--;
     } else {
       selectItem.add(SelectedItem(id: id, name: name, sks: sks));
     }
   }
 
-   int get calculateTotalSKS {
+  int get calculateTotalSKS {
+    int totalSKS = 0;
+      for (var item in selectItem) {
+        totalSKS += item.sks;
+      }
+    print('Total SKS: $totalSKS');
+    return totalSKS;
+  }
+
+  int get calculateMinTotalSKS {
     int totalSKS = 0;
     for (var item in selectItem) {
-      totalSKS += item.sks;
+      totalSKS -= item.sks;
     }
     print('Total SKS: $totalSKS');
     return totalSKS;
   }
-  
-  
 
   void saveDataToStorage() async {
     // Mengonversi List menjadi String menggunakan json.encode
@@ -86,7 +106,6 @@ class _PerwalianState extends State<Perwalian> {
       matkulCount = 0;
     });
   }
-
 
   checkStorageContents() async {
     final secureStorage = FlutterSecureStorage();
@@ -189,25 +208,16 @@ class _PerwalianState extends State<Perwalian> {
                             return CustomCheckbox(
                               name: matkul[index].name,
                               sks: matkul[index].sks,
-                              selected: _isChecked,
+                              isChecked: _isChecked,
+                              onChanged: (value) {
+                                setState(() {
+                                  _isChecked = value;
+                                });
+                              },
                               onTap: () {
                                 incrementMatkulCount();
                                 handleTapItem(matkul[index].id,
                                     matkul[index].name, matkul[index].sks);
-
-                                String dataMatkul = selectItem.join(',');
-                                storage
-                                    .write(key: 'dataMatkul', value: dataMatkul)
-                                    .then((_) {
-                                  // Data is successfully stored
-                                  print('Data stored successfully');
-                                }).catchError((error) {
-                                  // Error occurred while storing data
-                                  print('Error storing data: $error');
-                                });
-                                setState(() {
-                                  _isChecked = !_isChecked;
-                                });
                               },
                             );
                           },
@@ -215,7 +225,7 @@ class _PerwalianState extends State<Perwalian> {
                         const SizedBox(
                           height: 15,
                         ),
-                         Text(
+                        Text(
                           'Jumlah SKS : ${calculateTotalSKS}',
                           style: TextStyle(color: Color(0xFFAFAFAF)),
                         ),
@@ -230,7 +240,12 @@ class _PerwalianState extends State<Perwalian> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => DetailPerwalian(
-                                      selectedItems: selectItem, onDataClicked: matkulCount, onClearData: () {clearClickedData();},),
+                                    selectedItems: selectItem,
+                                    onDataClicked: matkulCount,
+                                    onClearData: () {
+                                      clearClickedData();
+                                    },
+                                  ),
                                 ),
                               );
                               saveDataToStorage();
