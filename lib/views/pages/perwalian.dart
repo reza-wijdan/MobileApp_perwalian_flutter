@@ -10,6 +10,7 @@ import 'package:guardianship_siswa_fe/model/select.dart';
 import 'package:guardianship_siswa_fe/services/api_services.dart';
 import 'package:guardianship_siswa_fe/viewModel/matkulViewModel.dart';
 import 'package:guardianship_siswa_fe/views/components/chekbox.dart';
+import 'package:guardianship_siswa_fe/views/components/loading.dart';
 import 'package:guardianship_siswa_fe/views/pages/detailPerwalian.dart';
 
 class Perwalian extends StatefulWidget {
@@ -27,6 +28,7 @@ class _PerwalianState extends State<Perwalian> {
   bool _isChecked = false;
   final storage = FlutterSecureStorage();
   int matkulCount = 0;
+  bool isLoading = false;
 
   void initState() {
     getData();
@@ -49,7 +51,9 @@ class _PerwalianState extends State<Perwalian> {
   getData() async {
     matkul = await apiService.getMatkul();
 
-    setState(() {});
+    setState(() {
+      isLoading = true;
+    });
   }
 
   void incrementMatkulCount() {
@@ -124,7 +128,6 @@ class _PerwalianState extends State<Perwalian> {
 
   @override
   Widget build(BuildContext context) {
-    print(calculateTotalSKS);
     return Scaffold(
       body: Stack(
         children: [
@@ -144,18 +147,23 @@ class _PerwalianState extends State<Perwalian> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          Icon(Icons.arrow_back),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          const Text(
-                            "Perwalian",
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 18),
-                          )
-                        ],
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Row(
+                          children: [
+                            Icon(Icons.arrow_back),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            const Text(
+                              "Perwalian",
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 18),
+                            )
+                          ],
+                        ),
                       ),
                       SvgPicture.asset("assets/images/ic_perwalian.svg"),
                     ],
@@ -199,7 +207,7 @@ class _PerwalianState extends State<Perwalian> {
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
-                        ListView.builder(
+                        !isLoading ? Loading() : ListView.builder(
                           shrinkWrap: true,
                           itemCount: matkul.length,
                           physics: const ClampingScrollPhysics(),
