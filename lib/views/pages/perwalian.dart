@@ -27,6 +27,7 @@ class _PerwalianState extends State<Perwalian> {
   List<SelectedItem> selectItem = [];
   bool _isChecked = false;
   final storage = FlutterSecureStorage();
+  int matkulCount = 0;
 
   void initState() {
     getData();
@@ -37,6 +38,12 @@ class _PerwalianState extends State<Perwalian> {
     matkul = await apiService.getMatkul();
 
     setState(() {});
+  }
+
+  void incrementMatkulCount() {
+    setState(() {
+      matkulCount++;
+    });
   }
 
   addToStorage(String key, String value) async {
@@ -72,6 +79,12 @@ class _PerwalianState extends State<Perwalian> {
 
   bool isSelected(int id) {
     return selectItem.any((item) => item.id == id);
+  }
+
+  void clearClickedData() {
+    setState(() {
+      matkulCount = 0;
+    });
   }
 
 
@@ -178,6 +191,7 @@ class _PerwalianState extends State<Perwalian> {
                               sks: matkul[index].sks,
                               selected: _isChecked,
                               onTap: () {
+                                incrementMatkulCount();
                                 handleTapItem(matkul[index].id,
                                     matkul[index].name, matkul[index].sks);
 
@@ -216,7 +230,7 @@ class _PerwalianState extends State<Perwalian> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => DetailPerwalian(
-                                      selectedItems: selectItem),
+                                      selectedItems: selectItem, onDataClicked: matkulCount, onClearData: () {clearClickedData();},),
                                 ),
                               );
                               saveDataToStorage();

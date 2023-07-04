@@ -10,10 +10,12 @@ import 'package:guardianship_siswa_fe/viewModel/sendViewModel.dart';
 
 class DetailPerwalian extends StatefulWidget {
     final List<SelectedItem> selectedItems;
+    final int onDataClicked;
+    final VoidCallback onClearData;
 
   @override
   _DetailPerwalian createState() => _DetailPerwalian();
-    const DetailPerwalian({required this.selectedItems});
+    const DetailPerwalian({required this.selectedItems, required this.onDataClicked, required this.onClearData});
 
 }
 class _DetailPerwalian extends State<DetailPerwalian> {
@@ -31,6 +33,7 @@ void initState() {
     print('Total SKS: $totalSKS');
     return totalSKS;
   }
+
 
 checkStorageContents() async {
     final secureStorage = FlutterSecureStorage();
@@ -70,6 +73,7 @@ checkStorageContents() async {
                     children: [
                       GestureDetector(
                         onTap: () {
+                          widget.onClearData();
                           Navigator.of(context).pop();
                           setState(() {
                             // Menghapus data yang dipilih
@@ -182,7 +186,7 @@ checkStorageContents() async {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  "Jumlah Mata Kuliah : 5",
+                                  "Jumlah Mata Kuliah : ${widget.onDataClicked}",
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 12),
