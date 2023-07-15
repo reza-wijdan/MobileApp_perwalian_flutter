@@ -9,3 +9,4 @@ final appTextNon = Color(0xFF7A7A7A);
 final appCardNotif = Color(0xFFFFFAEF);
 final appCardBorder = Color(0xFFFBD062);
 final appBlueSoft = Color.fromARGB(255, 238, 251, 255);
+final appGreen = Color(0xFF32BA7C);

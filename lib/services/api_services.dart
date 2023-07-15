@@ -77,4 +77,21 @@ class ApiService {
       print(response.body);
     }
   }
+
+  Future<Map<String, dynamic>> fetchData() async {
+    final token = await getTokenFromStorage();
+    final response = await http.get(
+      Uri.parse('http://absensi-siswa-be.sagatech-alpha.com/api/siswa/matakuliah'),
+      headers: {'Accept': 'application/json', 'Content-Type': 'application/json', 'Authorization': 'Bearer $token'},
+    );
+
+    print(response.body);
+
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body);
+      return jsonData;
+    } else {
+      throw Exception('Failed to fetch data');
+    }
+  }
 }

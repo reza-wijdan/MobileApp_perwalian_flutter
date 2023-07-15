@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:guardianship_siswa_fe/constants/color.dart';
+import 'package:guardianship_siswa_fe/services/api_services.dart';
 import 'package:guardianship_siswa_fe/views/components/CardPerwalian.dart';
+import 'package:guardianship_siswa_fe/views/components/CardSelesai.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -11,8 +13,34 @@ class Home extends StatefulWidget {
 }
 
 class _MyHomeState extends State<Home> {
+  Map<String, dynamic>? data;
+  int statusCode = 0;
+
+  void initState() {
+    fetchData();    
+    super.initState();
+  }
+
+
+  Future<void> fetchData() async {
+    try {
+      final jsonData = await ApiService().fetchData();
+      final status = jsonData['status'];
+
+      setState(() {
+        statusCode = status['code'];
+      });
+    } catch (error) {
+      print(error.toString());
+      setState(() {
+        statusCode = 0;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    print(statusCode);
     return Scaffold(
       body: Stack(
         children: [
@@ -105,7 +133,7 @@ class _MyHomeState extends State<Home> {
                         padding: const EdgeInsets.symmetric(
                           horizontal: 25,
                         ),
-                        child: CardPerwalian(),
+                        child: statusCode == 200 ? CardSelesai() : CardPerwalian(),
                       )
                     ],
                   ),
