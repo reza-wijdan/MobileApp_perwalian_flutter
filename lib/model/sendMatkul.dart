@@ -1,11 +1,10 @@
 class SendMatkul {
-  final int id;
+  final List<int> list_matakuliah;
+  SendMatkul({required this.list_matakuliah});
 
-  SendMatkul({required this.id});
-
-   Map<int, dynamic> toJson() {
+  Map<String, dynamic> toJson() {
     return {
-      id: id,
+      'list_matakuliah': list_matakuliah,
     };
   }
 }

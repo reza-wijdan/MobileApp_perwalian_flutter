@@ -16,6 +16,14 @@ class ApiService {
     return token;
   }
 
+  Future<String> getIdFromStorage() async {
+    final idMatkul = await secureStorage.read(key: 'selectedMatkul');
+    if (idMatkul == null) {
+      throw Exception('matkul tidak ada');
+    }
+    return idMatkul;
+  }
+
   Future<List<Matkul>> getMatkul() async {
     final token = await getTokenFromStorage();
     final url =
@@ -41,22 +49,32 @@ class ApiService {
     }
   }
 
-  Future<void> sendMatkul(List<SendMatkul> sendmatkul) async {
+  Future<void> sendMatkul(SendMatkul sendMatkuliah) async {
     final token = await getTokenFromStorage();
-    final List<Map<int, dynamic>> jsonData =
-        sendmatkul.map((send) => send.toJson()).toList();
 
-    final response = await http.post(
-        Uri.parse(
-            'http://absensi-siswa-be.sagatech-alpha.com/api/siswa/perwalian/create'),
-        body: jsonData,
-        headers: {'Accept': 'application/json', 'Authorization': 'Bearer $token'}
-        );
+    var headers = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization':
+          'Bearer ${token}',
+    };
+
+    var sendMatkulRequest = {
+      "list_matakuliah": sendMatkuliah.list_matakuliah,
+    };
+    print(sendMatkulRequest);
+
+    var response = await http.post(
+      Uri.parse(
+          'http://absensi-siswa-be.sagatech-alpha.com/api/siswa/perwalian/create'),
+      headers: headers,
+      body: jsonEncode(sendMatkulRequest),
+    );
 
     if (response.statusCode == 200) {
       print(response.body);
     } else {
-      // Gagal melakukan posting data, lakukan penanganan error
+      print(response.body);
     }
   }
 }

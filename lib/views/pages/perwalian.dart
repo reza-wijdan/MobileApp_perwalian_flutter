@@ -96,6 +96,8 @@ class _PerwalianState extends State<Perwalian> {
   void saveDataToStorage() async {
     // Mengonversi List menjadi String menggunakan json.encode
     String selectedItemsString = selectItem.toString();
+    
+    selectedItemsString = selectedItemsString.replaceAll(' ', '');
 
     // Menyimpan List selectedItems ke storage dengan menggunakan satu key
     await storage.write(key: 'selectedMatkul', value: selectedItemsString);

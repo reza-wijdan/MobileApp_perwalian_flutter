@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -5,7 +7,9 @@ import 'package:guardianship_siswa_fe/constants/color.dart';
 import 'package:guardianship_siswa_fe/model/matkul.dart';
 import 'package:guardianship_siswa_fe/model/select.dart';
 import 'package:guardianship_siswa_fe/model/sendMatkul.dart';
+import 'package:guardianship_siswa_fe/services/api_services.dart';
 import 'package:guardianship_siswa_fe/viewModel/sendViewModel.dart';
+import 'package:guardianship_siswa_fe/views/pages/notifKonfir.dart';
 
 class DetailPerwalian extends StatefulWidget {
   final List<SelectedItem> selectedItems;
@@ -21,7 +25,11 @@ class DetailPerwalian extends StatefulWidget {
 }
 
 class _DetailPerwalian extends State<DetailPerwalian> {
+  final _formKey = GlobalKey<FormState>();
   bool isChecked = false;
+  final storage = FlutterSecureStorage();
+  List<SendMatkul> send = [];
+  String idMataKuliah = '';
 
   void initState() {
     checkStorageContents();
@@ -47,6 +55,48 @@ class _DetailPerwalian extends State<DetailPerwalian> {
     });
   }
 
+  void getIdFromStorage() async {
+    final idMatkul = await storage.read(key: 'selectedMatkul');
+    if (idMatkul == null) {
+      throw Exception('matkul tidak ada');
+    }
+
+    // // Remove square brackets [ and ] from the idMatkul value if present
+    final cleanedIdMatkul = idMatkul.replaceAll('[', '').replaceAll(']', '');
+    // final idWithoutCommas = cleanedIdMatkul.replaceAll(',', '');
+    // return idWithoutCommas;
+    setState(() {
+      idMataKuliah = cleanedIdMatkul;
+    });
+    // var convert = int.parse(idMatkul);
+    // return idWithoutCommas;
+    // setState(() {
+    //   idMataKuliah = cleanedIdMatkul;
+    // });
+  }
+
+  void submit() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      var idKuliah = await ApiService().getIdFromStorage();
+      var cleanedId = idKuliah.replaceAll('[', '').replaceAll(']', '');
+      String data = cleanedId;
+      List<int> dataList = data.split(",").map((value) => int.parse(value)).toList();
+      if (idKuliah != null) {
+        var sendMatkul = SendMatkul(list_matakuliah: dataList);
+
+        try {
+          await ApiService().sendMatkul(sendMatkul);
+          Navigator.push(context, MaterialPageRoute(builder: (context) => NotifKonfir()));
+        } catch (error) {
+          throw Exception('$error');
+        }
+      } else {
+        print('Invalid number format for idMatkul: $idKuliah');
+      }
+    }
+  }
+
   checkStorageContents() async {
     final secureStorage = FlutterSecureStorage();
     final allValues = await secureStorage.readAll();
@@ -64,6 +114,7 @@ class _DetailPerwalian extends State<DetailPerwalian> {
 
   @override
   Widget build(BuildContext context) {
+    // print(checkStorageContents());
     return Scaffold(
       body: Stack(
         children: [
@@ -210,27 +261,30 @@ class _DetailPerwalian extends State<DetailPerwalian> {
                   SizedBox(
                     height: 50,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 0),
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(appBlue),
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
+                  Form(
+                    key: _formKey,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 0),
+                      child: ElevatedButton(
+                        onPressed: submit,
+                        style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all<Color>(appBlue),
+                          shape:
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
                           ),
+                          padding: MaterialStateProperty.all<EdgeInsets>(
+                              EdgeInsets.symmetric(
+                                  horizontal: 120, vertical: 18)),
                         ),
-                        padding: MaterialStateProperty.all<EdgeInsets>(
-                            EdgeInsets.symmetric(
-                                horizontal: 120, vertical: 18)),
-                      ),
-                      child: Text(
-                        'LANJUTKAN',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
+                        child: Text(
+                          'LANJUTKAN',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
                   ),
